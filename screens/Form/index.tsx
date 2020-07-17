@@ -1,11 +1,10 @@
-import React, {FC, Fragment, useEffect, useState} from 'react';
-import {Button} from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import {Formik, useFormikContext} from 'formik';
+import {Formik} from 'formik';
 import * as yup from 'yup';
-import TextField from '../../elements/TextField';
-import Select from '../../elements/Select';
-import {countryList, initialValues} from './initialValues';
+import FormFields from '../../components/Form';
+import {initialValues} from './initialValues';
+import {IUserForm, IFormValues} from './types';
 
 /**
  * ssn validation reference: https://www.etl-tools.com/regular-expressions/is-swedish-person-number.html
@@ -18,29 +17,7 @@ const validate = yup.object().shape({
   country: yup.string().required('Country is required'),
 });
 
-const UserFormFields = () => {
-  const {isValid, handleSubmit, values} = useFormikContext();
-
-  useEffect(() => {
-    const saveData = async () => {
-      if (values !== initialValues) {
-        await AsyncStorage.setItem('formValues', JSON.stringify(values));
-      }
-    };
-    saveData();
-  }, [values]);
-  return (
-    <Fragment>
-      <TextField name="ssn" placeholder="Social security number" />
-      <TextField name="phoneNumber" placeholder="Phone number" />
-      <TextField name="email" placeholder="Email" />
-      <Select name="country" values={countryList} />
-      <Button title="Submit" disabled={!isValid} onPress={handleSubmit} />
-    </Fragment>
-  );
-};
-
-const UserForm: FC<any> = () => {
+const UserForm: FC<IUserForm> = () => {
   const [formValues, handleFormValues] = useState(initialValues);
   useEffect(() => {
     const getValues = async () => {
@@ -51,9 +28,12 @@ const UserForm: FC<any> = () => {
     };
     getValues();
   }, []);
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: IFormValues) => {
     AsyncStorage.removeItem('formValues');
     handleFormValues(initialValues);
+    if (values) {
+      console.log('Success');
+    }
   };
   return (
     <>
@@ -62,7 +42,7 @@ const UserForm: FC<any> = () => {
         initialValues={formValues}
         onSubmit={handleSubmit}
         validationSchema={validate}>
-        <UserFormFields />
+        <FormFields />
       </Formik>
     </>
   );
