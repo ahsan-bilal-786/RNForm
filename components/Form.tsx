@@ -1,30 +1,41 @@
-import React, {Fragment, useEffect} from 'react';
-import {Button} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import {useFormikContext} from 'formik';
+import React, {Fragment, FC} from 'react';
+import {IFormValues} from '../screens/Form/types';
 import TextField from '../elements/TextField';
 import Select from '../elements/Select';
 import {countryList} from './initialValues';
-import {initialValues} from '../screens/Form/initialValues';
 
-const UserFormFields = () => {
-  const {isValid, handleSubmit, values} = useFormikContext();
+interface IUserFormFields {
+  values: IFormValues;
+  handleChange: (name: string, value: string) => void;
+}
 
-  useEffect(() => {
-    const saveData = async () => {
-      if (values !== initialValues) {
-        await AsyncStorage.setItem('formValues', JSON.stringify(values));
-      }
-    };
-    saveData();
-  }, [values]);
+const UserFormFields: FC<IUserFormFields> = ({values, handleChange}) => {
   return (
     <Fragment>
-      <TextField name="ssn" placeholder="Social security number" />
-      <TextField name="phoneNumber" placeholder="Phone number" />
-      <TextField name="email" placeholder="Email" />
-      <Select name="country" values={countryList} />
-      <Button title="Submit" disabled={!isValid} onPress={handleSubmit} />
+      <TextField
+        name="ssn"
+        placeholder="Social security number"
+        value={values.ssn}
+        handleChange={handleChange}
+      />
+      <TextField
+        name="phoneNumber"
+        placeholder="Phone number"
+        value={values.phoneNumber}
+        handleChange={handleChange}
+      />
+      <TextField
+        name="email"
+        placeholder="Email"
+        value={values.email}
+        handleChange={handleChange}
+      />
+      <Select
+        name="country"
+        values={countryList}
+        value={values.country}
+        handleChange={handleChange}
+      />
     </Fragment>
   );
 };
