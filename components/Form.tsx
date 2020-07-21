@@ -1,8 +1,7 @@
 import React, {Fragment, FC} from 'react';
-import {IFormValues} from '../screens/Form/types';
+import {IFormValues, ICountry} from '../screens/Form/types';
 import TextField from '../elements/TextField';
 import Select from '../elements/Select';
-import {countryList} from './initialValues';
 
 interface IErrors {
   ssn?: string;
@@ -13,12 +12,14 @@ interface IErrors {
 
 interface IUserFormFields {
   values: IFormValues;
+  countries: ICountry[];
   errors: IErrors;
   handleChange: (name: string, value: string) => void;
 }
 
 const UserFormFields: FC<IUserFormFields> = ({
   values,
+  countries,
   errors,
   handleChange,
 }) => {
@@ -47,7 +48,7 @@ const UserFormFields: FC<IUserFormFields> = ({
       />
       <Select
         name="country"
-        values={countryList}
+        values={countries}
         value={values.country}
         error={errors.country}
         handleChange={handleChange}
