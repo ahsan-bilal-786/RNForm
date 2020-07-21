@@ -1,7 +1,7 @@
 import React, {FC, useState, useEffect} from 'react';
 import {Button, Text, View} from 'react-native';
 import {connect} from 'react-redux';
-import map from 'lodash/map';
+import each from 'lodash/each';
 import {handleSubmit, handleChange, loadUserData} from './ducks/actions';
 import * as yup from 'yup';
 import FormFields from '../../components/Form';
@@ -57,7 +57,7 @@ const UserForm: FC<IUserForm> = ({
   handleChange,
   handleSubmit,
 }) => {
-  const [errors, handleErrors] = useState([]);
+  const [errors, handleErrors] = useState({});
   useEffect(() => {
     loadUserData();
   }, []);
@@ -69,21 +69,24 @@ const UserForm: FC<IUserForm> = ({
         handleSubmit();
       })
       .catch((err) => {
-        handleErrors(err.errors);
+        const obj = {};
+        each(err.inner, (details) => {
+          obj[details.path] = details.message;
+        });
+        handleErrors(obj);
       });
   };
   return (
-    <>
-      <FormFields values={userDetails} handleChange={handleChange} />
-      {map(errors, (error, i) => (
-        <Text key={i} style={styles.alert}>
-          {error}
-        </Text>
-      ))}
+    <View style={styles.container}>
+      <FormFields
+        values={userDetails}
+        errors={errors}
+        handleChange={handleChange}
+      />
       <View style={styles.btn}>
         <Button title="Submit" onPress={onSubmit} />
       </View>
-    </>
+    </View>
   );
 };
 
